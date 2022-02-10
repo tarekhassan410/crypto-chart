@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import DayPickerInput from "react-day-picker/DayPickerInput";
 import "react-day-picker/lib/style.css";
@@ -6,71 +6,78 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
+import moment from "moment";
 import axios from "axios";
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend
 );
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top",
-    },
-    title: {
-      display: true,
-      text: "Chart.js Bar Chart",
-    },
-  },
-};
-
-const labels = ["January", "February", "March", "April", "May", "June", "July"];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: "Dataset 1",
-      data: { min: 0, max: 1000 },
-      backgroundColor: "rgba(255, 99, 132, 0.5)",
-    },
-    {
-      label: "Dataset 2",
-      data: { min: 0, max: 1000 },
-      backgroundColor: "rgba(53, 162, 235, 0.5)",
-    },
-  ],
-};
-
 function App() {
-  const [randomVar, setRandomVar] = useState("ff");
-  const [startDate, setStartDate] = useState([]);
-  const [endDate, setEndDate] = useState([]);
-  const [chartData, setChartdata] = useState([]);
+  const [startDate, setStartDate] = useState("2022-01-01");
+  const [endDate, setEndDate] = useState("2022-01-10");
+  const [chartData, setChartData] = useState({
+    labels: ["20", "30", "20", "30", "20", "30"],
+    datasets: [
+      {
+        label: "Dataset 1",
+        data: ["20", "30", "20", "30", "20", "30"],
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+    ],
+  });
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "BTC daily chart",
+      },
+    },
+  };
 
-  // https://api.coindesk.com/v1/bpi/historical/close.json?start=[15-05-2020]&end=[17-05-2020]&index=[USD]
+  async function fetchData() {
+    const res = await axios.get(
+      `https://api.coindesk.com/v1/bpi/historical/close.json?%20start=${startDate}&end=${endDate}&index=[USD]`
+    );
+    const coinData = res.data.bpi;
+    // res.data.bpi.map((coinData) => console.log(coinData));
+    let labels = [];
+    let chartData = [];
+    Object.keys(coinData).map((key) => {
+      console.log("key:", key);
+      labels.push(key);
+      chartData.push(coinData[key]);
+    });
+    setChartData({
+      labels,
+      datasets: [
+        {
+          label: "BTC USD",
+          data: chartData,
+          backgroundColor: "rgba(255, 99, 132, 0.5)",
+        },
+      ],
+    });
+  }
 
   useEffect(() => {
-    async function fetchData() {
-      // https://api.coindesk.com/v1/bpi/historical/close.json?start=[2018-05-01]&end=[2019-05-01]&index=[USD]
-      const res = await axios.get(
-        "https://api.coindesk.com/v1/bpi/historical/close.json?%20start=2021-08-01&end=2021-08-10&index=[USD]"
-      );
-
-      console.log(res);
-    }
     fetchData();
   }, []);
 
@@ -78,14 +85,25 @@ function App() {
     <div className="App pt-16">
       <div className="flex justify-center">
         <div className="border border-black">
-          <DayPickerInput onDayChange={(day) => setStartDate(day)} />
+          <DayPickerInput
+            onDayChange={(day) =>
+              setStartDate(moment(day).format("YYYY-MM-DD"))
+            }
+          />
         </div>
         <div className="border border-black ml-2">
-          <DayPickerInput onDayChange={(day) => setEndDate(day)} />
+          <DayPickerInput
+            onDayChange={(day) => setEndDate(moment(day).format("YYYY-MM-DD"))}
+          />
+        </div>
+        <div className="border border-black ml-2 px-2 bg-teal-800 text-white">
+          <button onClick={fetchData}> update </button>
         </div>
       </div>
-      <div className="h-12">
-        <Bar className="h-12" options={options} data={data} />
+      <div className="flex justify-center my-10">
+        <div className="chart">
+          <Line options={options} data={chartData} />
+        </div>
       </div>
     </div>
   );
