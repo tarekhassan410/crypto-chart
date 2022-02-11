@@ -44,9 +44,8 @@ function App() {
     const coinData = res.data.bpi;
     let labels = [];
     let chartData = [];
-    //
+    // looping over returned object
     Object.keys(coinData).map((key) => {
-      console.log("key:", key);
       labels.push(key);
       chartData.push(coinData[key]);
     });
