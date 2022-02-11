@@ -18,7 +18,26 @@ code {
     monospace;
 }
 
+.DayPickerInput input {
+  text-align: center;
+  outline-width: 0px;
+}
+
 .chart {
   height: 20rem;
   width: 40rem;
+}
+
+@media screen and (max-width: 600px) {
+  .chart {
+    height: 20rem;
+    width: 25rem;
+  }
+}
+
+@media screen and (max-width: 440px) {
+  .chart {
+    height: 20rem;
+    width: 21rem;
+  }
 }

@@ -14,17 +14,18 @@ function App() {
   const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
   const [chartType, setChartType] = useState("bar");
   const [chartData, setChartData] = useState({
-    labels: ["20", "30", "20", "30", "20", "30"],
+    labels: [""],
     datasets: [
       {
         label: "Dataset 1",
-        data: ["20", "30", "20", "30", "20", "30"],
+        data: [""],
         backgroundColor: "rgba(20, 184, 166, 0.5)",
       },
     ],
   });
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
@@ -68,24 +69,28 @@ function App() {
 
   return (
     <div className="App pt-16">
-      <div className="flex justify-center">
-        <div className="border border-black py-2 pl-2">
+      <div className="flex flex-col md:flex-row justify-center">
+        <div className="border border-black mx-5 md:mx-2 my-1 md:my-0 md:ml-2 py-2 pl-2">
           <DayPickerInput
             value={startDate}
             onDayChange={(day) =>
               setStartDate(moment(day).format("YYYY-MM-DD"))
             }
+            className="text-center"
           />
         </div>
-        <div className="border border-black ml-2 py-2 pl-2">
+        <div className="border border-black mx-5 md:mx-2 my-1 md:my-0 md:ml-2 py-2 pl-2">
           <DayPickerInput
             value={endDate}
             onDayChange={(day) => setEndDate(moment(day).format("YYYY-MM-DD"))}
           />
         </div>
 
-        <div className="border border-black ml-2 px-2 bg-teal-800 text-white py-2">
-          <button onClick={fetchData}> update chart </button>
+        <div
+          onClick={fetchData}
+          className="border border-black cursor-pointer rounded mx-5 md:mx-2 my-1 md:my-0 md:ml-2 px-2 bg-teal-800 text-white py-2"
+        >
+          <button> update chart </button>
         </div>
       </div>
       <div className="flex justify-center my-10">
